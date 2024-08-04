@@ -7,14 +7,12 @@ export default function Home() {
   const [AIText, setAIText] = useState<string>();
   const [voices, setVoices] = useState<Array<SpeechSynthesisVoice>>();
 
-  const activeVoice = voices?.find(({ name, lang }) => {
-    if (name === "Google UK English Male") {
-      return true;
-    }
-    return false;
-  });
-
-  console.log(activeVoice);
+  const activeVoice =
+    voices?.find(({ name, lang }) => {
+      if (name === "Google UK English Male") {
+        return true;
+      } else return false;
+    }) || voices?.[0];
 
   useEffect(() => {
     const voices = window.speechSynthesis.getVoices();
