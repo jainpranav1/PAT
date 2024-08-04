@@ -7,7 +7,7 @@ dotenv.config();
 
 const gemini_api_key = process.env.GEMINI_API_KEY;
 if (!gemini_api_key) {
-  throw Error("can't access the GEMINI_API_KEY environment variable");
+  throw new Error("can't access the GEMINI_API_KEY environment variable");
 }
 
 const genAI = new GoogleGenerativeAI(gemini_api_key);

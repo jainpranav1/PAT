@@ -15,21 +15,35 @@ export default function Home() {
       const transcript = event.results[0][0].transcript;
       setUserText(transcript);
 
-      const gemini_response = await fetch("/api/gemini", {
+      const geminiResponse = await fetch("/api/gemini", {
         method: "POST",
         body: JSON.stringify({
           userText: transcript,
         }),
       }).then((r) => r.json());
 
-      setAIText(gemini_response.AIText);
+      setAIText(geminiResponse.AIText);
 
-      const openai_response = await fetch("/api/googleCloud", {
+      const googleCloudResponse = await fetch("/api/googleCloud", {
         method: "POST",
         body: JSON.stringify({
-          AIText: gemini_response.AIText,
+          AIText: geminiResponse.AIText,
         }),
       }).then((r) => r.json());
+
+      // based off this stack overflow answer:
+      // https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
+      const audioContext = new AudioContext();
+      const bytesList = googleCloudResponse.audio.data;
+      const bytesUint8Array = new Uint8Array(bytesList);
+      const bytesArrayBuffer = bytesUint8Array.buffer;
+      const decodedBuffer = await audioContext.decodeAudioData(
+        bytesArrayBuffer
+      );
+      const source = audioContext.createBufferSource();
+      source.buffer = decodedBuffer;
+      source.connect(audioContext.destination);
+      source.start(0);
     };
 
     recognition.start();

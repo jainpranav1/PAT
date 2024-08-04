@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const data: protos.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
     input: { text: AIText },
     // Select the language and SSML voice gender (optional)
-    voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+    voice: { languageCode: "en-GB", ssmlGender: "MALE" },
     // select the type of audio encoding
     audioConfig: { audioEncoding: "MP3" },
   };
@@ -26,14 +26,10 @@ export async function POST(request: Request) {
   const [response] = await client.synthesizeSpeech(data);
 
   if (response.audioContent) {
-    // Write the binary audio content to a local file
-    await fs.writeFile(
-      "app/api/googleCloud/output.mp3",
-      response.audioContent,
-      "binary"
-    );
-    console.log("Audio content written to file: output.mp3");
+    return NextResponse.json({
+      audio: response.audioContent,
+    });
   }
 
-  return NextResponse.json({});
+  throw new Error("no audio content available");
 }
