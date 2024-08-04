@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.API_KEY as string);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
 export async function POST(request: Request) {
   const { userText } = await request.json();
