@@ -15,7 +15,5 @@ export async function POST(request: Request) {
   const response = await result.response;
   const AIText = response.text();
 
-  console.log("AI Text", AIText);
-
   return NextResponse.json({ AIText: AIText });
 }
