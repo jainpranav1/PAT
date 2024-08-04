@@ -24,10 +24,10 @@ export default function Home() {
 
       setAIText(gemini_response.AIText);
 
-      const openai_response = await fetch("/api/openai", {
+      const openai_response = await fetch("/api/googleCloud", {
         method: "POST",
         body: JSON.stringify({
-          userText: transcript,
+          AIText: gemini_response.AIText,
         }),
       }).then((r) => r.json());
     };
