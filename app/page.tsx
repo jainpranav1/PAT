@@ -4,14 +4,9 @@ import * as THREE from "three";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const [userText, setUserText] = useState<string>();
-  const [AIText, setAIText] = useState<string>();
-
-  const audioContext = new AudioContext();
-  const analyser = audioContext.createAnalyser();
-  analyser.fftSize = 32;
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Float32Array(bufferLength);
+  let audioContext = null;
+  let analyser = null;
+  let dataArray = null;
 
   function start() {
     const SpeechRecognition =
@@ -20,7 +15,7 @@ export default function Home() {
 
     recognition.onresult = async function (event) {
       const transcript = event.results[0][0].transcript;
-      setUserText(transcript);
+      console.log(transcript);
 
       const geminiResponse = await fetch("/api/gemini", {
         method: "POST",
@@ -29,7 +24,7 @@ export default function Home() {
         }),
       }).then((r) => r.json());
 
-      setAIText(geminiResponse.AIText);
+      console.log(geminiResponse.AIText);
 
       const googleCloudResponse = await fetch("/api/googleCloud", {
         method: "POST",
@@ -40,17 +35,32 @@ export default function Home() {
 
       // based off this stack overflow answer:
       // https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
+
+      audioContext = new AudioContext();
+      analyser = audioContext.createAnalyser();
+
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+
       const bytesList = googleCloudResponse.audio.data;
       const bytesUint8Array = new Uint8Array(bytesList);
       const bytesArrayBuffer = bytesUint8Array.buffer;
       const decodedBuffer = await audioContext.decodeAudioData(
         bytesArrayBuffer
       );
+
       const source = audioContext.createBufferSource();
       source.buffer = decodedBuffer;
       source.connect(analyser);
       analyser.connect(audioContext.destination);
       source.start(0);
+
+      source.onended = async function (event) {
+        audioContext = null;
+        analyser = null;
+        dataArray = null;
+      };
     };
 
     recognition.start();
@@ -89,8 +99,8 @@ export default function Home() {
         type: "v2",
         value: new THREE.Vector2(window.innerWidth, window.innerHeight),
       },
-      u_time: { type: "f", value: 0.0 },
       u_frequency: { type: "f", value: 0.0 },
+      u_time: { type: "f", value: 0.0 },
     };
 
     const geometry = new THREE.IcosahedronGeometry(4, 20);
@@ -98,7 +108,6 @@ export default function Home() {
       uniforms,
       vertexShader: `
         uniform float u_time;
-        uniform float u_frequency;
 
         vec3 mod289(vec3 x)
         {
@@ -193,9 +202,11 @@ export default function Home() {
           return 2.2 * n_xyz;
         }
 
+        uniform float u_frequency;
+
         void main() {
           float noise = 5.0 * pnoise(position + u_time, vec3(10.0));
-          float displacement = (u_frequency / 30.0) * (noise / 10.0);
+          float displacement = (u_frequency * 1.) + (noise / 10.0);
           vec3 newPosition = position + normal * displacement;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
         }
@@ -221,8 +232,15 @@ export default function Home() {
 
     var animate = function () {
       uniforms.u_time.value = clock.getElapsedTime();
-      analyser.getFloatFrequencyData(dataArray);
-      uniforms.u_frequency.value = average(dataArray);
+      if (analyser && dataArray) {
+        analyser.getByteFrequencyData(dataArray);
+        const val = average(dataArray) / 100.0;
+        console.log(val);
+        uniforms.u_frequency.value = val;
+      } else {
+        console.log(100.0);
+        uniforms.u_frequency.value = 0.0;
+      }
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -232,8 +250,6 @@ export default function Home() {
   return (
     <div>
       <button onClick={start}>Start</button>
-      <p>User Text: {userText}</p>
-      <p>AI Text: {AIText}</p>
       <div ref={refContainer}></div>
     </div>
   );
