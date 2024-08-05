@@ -4,9 +4,7 @@ import * as THREE from "three";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  let audioContext = null;
   let analyser = null;
-  let dataArray = null;
 
   function start() {
     const SpeechRecognition =
@@ -36,12 +34,10 @@ export default function Home() {
       // based off this stack overflow answer:
       // https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
 
-      audioContext = new AudioContext();
+      const audioContext = new AudioContext();
       analyser = audioContext.createAnalyser();
-
+      console.log("analyser - start()", analyser);
       analyser.fftSize = 2048;
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
 
       const bytesList = googleCloudResponse.audio.data;
       const bytesUint8Array = new Uint8Array(bytesList);
@@ -57,16 +53,14 @@ export default function Home() {
       source.start(0);
 
       source.onended = async function (event) {
-        audioContext = null;
         analyser = null;
-        dataArray = null;
       };
     };
 
     recognition.start();
   }
 
-  const average = (array: Float32Array) => {
+  const average = (array: Uint8Array) => {
     return (
       array.reduce((a, b) => {
         return a + b;
@@ -232,15 +226,15 @@ export default function Home() {
 
     var animate = function () {
       uniforms.u_time.value = clock.getElapsedTime();
-      if (analyser && dataArray) {
+      if (analyser) {
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(dataArray);
-        const val = average(dataArray) / 100.0;
-        console.log(val);
-        uniforms.u_frequency.value = val;
+        uniforms.u_frequency.value = average(dataArray) / 100.0;
       } else {
-        console.log(100.0);
         uniforms.u_frequency.value = 0.0;
       }
+      console.log("analyzer - three.js", analyser);
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
