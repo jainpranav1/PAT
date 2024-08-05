@@ -7,6 +7,12 @@ export default function Home() {
   const [userText, setUserText] = useState<string>();
   const [AIText, setAIText] = useState<string>();
 
+  const audioContext = new AudioContext();
+  const analyser = audioContext.createAnalyser();
+  analyser.fftSize = 32;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Float32Array(bufferLength);
+
   function start() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -34,7 +40,6 @@ export default function Home() {
 
       // based off this stack overflow answer:
       // https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
-      const audioContext = new AudioContext();
       const bytesList = googleCloudResponse.audio.data;
       const bytesUint8Array = new Uint8Array(bytesList);
       const bytesArrayBuffer = bytesUint8Array.buffer;
@@ -43,12 +48,21 @@ export default function Home() {
       );
       const source = audioContext.createBufferSource();
       source.buffer = decodedBuffer;
-      source.connect(audioContext.destination);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
       source.start(0);
     };
 
     recognition.start();
   }
+
+  const average = (array: Float32Array) => {
+    return (
+      array.reduce((a, b) => {
+        return a + b;
+      }) / array.length
+    );
+  };
 
   // based off of this code:
   // https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
@@ -76,6 +90,7 @@ export default function Home() {
         value: new THREE.Vector2(window.innerWidth, window.innerHeight),
       },
       u_time: { type: "f", value: 0.0 },
+      u_frequency: { type: "f", value: 0.0 },
     };
 
     const geometry = new THREE.IcosahedronGeometry(4, 20);
@@ -83,6 +98,7 @@ export default function Home() {
       uniforms,
       vertexShader: `
         uniform float u_time;
+        uniform float u_frequency;
 
         vec3 mod289(vec3 x)
         {
@@ -178,8 +194,8 @@ export default function Home() {
         }
 
         void main() {
-          float noise = pnoise(position + u_time, vec3(10.0));
-          float displacement = noise / 10.0;
+          float noise = 5.0 * pnoise(position + u_time, vec3(10.0));
+          float displacement = (u_frequency / 30.0) * (noise / 10.0);
           vec3 newPosition = position + normal * displacement;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
         }
@@ -204,9 +220,9 @@ export default function Home() {
     const clock = new THREE.Clock();
 
     var animate = function () {
-      // ball.rotation.x += 0.001;
-      // ball.rotation.y += 0.001;
       uniforms.u_time.value = clock.getElapsedTime();
+      analyser.getFloatFrequencyData(dataArray);
+      uniforms.u_frequency.value = average(dataArray);
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
