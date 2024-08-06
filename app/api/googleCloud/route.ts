@@ -25,11 +25,11 @@ export async function POST(request: Request) {
   // Performs the text-to-speech request
   const [response] = await client.synthesizeSpeech(data);
 
-  if (response.audioContent) {
-    return NextResponse.json({
-      audio: response.audioContent,
-    });
+  if (!response.audioContent) {
+    throw new Error("response.audioContent is null");
   }
 
-  throw new Error("no audio content available");
+  return NextResponse.json({
+    audio: response.audioContent,
+  });
 }

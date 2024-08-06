@@ -70,7 +70,7 @@ export default function Home() {
 
   // based off of this code:
   // https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
-  const refContainer = useRef(null);
+  const refContainer = useRef() as { current: HTMLElement };
   useEffect(() => {
     // === THREE.JS CODE START ===
     const scene = new THREE.Scene();
@@ -83,10 +83,12 @@ export default function Home() {
     var renderer = new THREE.WebGLRenderer();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // document.body.appendChild( renderer.domElement );
+
     // use ref as a mount point of the Three.js scene instead of the document.body
-    refContainer.current &&
-      refContainer.current.appendChild(renderer.domElement);
+    if (!refContainer.current) {
+      throw new Error("refContainer.current is null");
+    }
+    refContainer.current.appendChild(renderer.domElement);
 
     const uniforms = {
       u_resolution: {
