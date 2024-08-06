@@ -36,7 +36,6 @@ export default function Home() {
 
       const audioContext = new AudioContext();
       analyser = audioContext.createAnalyser();
-      console.log("analyser - start()", analyser);
       analyser.fftSize = 2048;
 
       const bytesList = googleCloudResponse.audio.data;
@@ -234,7 +233,6 @@ export default function Home() {
       } else {
         uniforms.u_frequency.value = 0.0;
       }
-      console.log("analyzer - three.js", analyser);
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
