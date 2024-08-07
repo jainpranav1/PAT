@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const data = await fs.readFile("app/api/gemini/conversation.json", {
+  const data = await fs.readFile("public/conversation.json", {
     encoding: "utf8",
   });
 
@@ -34,10 +34,7 @@ export async function POST(request: Request) {
 
   const history = await chat.getHistory();
 
-  await fs.writeFile(
-    "app/api/gemini/conversation.json",
-    JSON.stringify(history)
-  );
+  await fs.writeFile("public/conversation.json", JSON.stringify(history));
 
   return NextResponse.json({ AIText: AIText });
 }
