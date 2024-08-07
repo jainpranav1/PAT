@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  let analyser = null;
+  let analyser: null | AnalyserNode = null;
 
   function start() {
     const SpeechRecognition =
@@ -69,7 +69,7 @@ export default function Home() {
 
   // based off of this code:
   // https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
-  const refContainer = useRef(null);
+  const refContainer = useRef(null) as { current: null | HTMLElement };
   useEffect(() => {
     // === THREE.JS CODE START ===
     const scene = new THREE.Scene();
