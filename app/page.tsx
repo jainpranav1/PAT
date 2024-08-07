@@ -69,7 +69,7 @@ export default function Home() {
 
   // based off of this code:
   // https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
-  const refContainer = useRef(null) as { current: null | HTMLElement };
+  const refContainer = useRef(null) as { current: null | HTMLDivElement };
   useEffect(() => {
     // === THREE.JS CODE START ===
     const scene = new THREE.Scene();
@@ -241,8 +241,7 @@ export default function Home() {
 
   return (
     <div>
-      <button onClick={start}>Start</button>
-      <div ref={refContainer}></div>
+      <div ref={refContainer} onClick={start}></div>
     </div>
   );
 }
