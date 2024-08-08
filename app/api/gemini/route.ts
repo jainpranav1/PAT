@@ -23,14 +23,14 @@ export async function POST(request: Request) {
 
   const chat = model.startChat({
     history: JSON.parse(data),
-    generationConfig: {
-      maxOutputTokens: 100,
-    },
   });
 
   const result = await chat.sendMessage(userText);
   const response = await result.response;
-  const AIText = response.text();
+  let AIText = response.text();
+
+  // remove formatting from reponse
+  AIText = AIText.split("*").join("");
 
   const history = await chat.getHistory();
 

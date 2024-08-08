@@ -65,6 +65,7 @@ export default function Home() {
 
       source.onended = async function (event) {
         analyser = null;
+        source = null;
       };
     };
 
