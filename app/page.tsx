@@ -6,8 +6,15 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   let analyser: null | AnalyserNode = null;
   let listening = false;
+  let source: null | AudioBufferSourceNode = null;
 
-  function start() {
+  function handleClick() {
+    if (source) {
+      source.stop();
+      source = null;
+      return;
+    }
+
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
@@ -50,11 +57,11 @@ export default function Home() {
         bytesArrayBuffer
       );
 
-      const source = audioContext.createBufferSource();
+      source = audioContext.createBufferSource();
       source.buffer = decodedBuffer;
       source.connect(analyser);
       analyser.connect(audioContext.destination);
-      source.start(0);
+      source.start();
 
       source.onended = async function (event) {
         analyser = null;
@@ -254,7 +261,7 @@ export default function Home() {
 
   return (
     <div>
-      <div ref={refContainer} onClick={start}></div>
+      <div ref={refContainer} onClick={handleClick}></div>
     </div>
   );
 }
