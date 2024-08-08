@@ -5,11 +5,16 @@ import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   let analyser: null | AnalyserNode = null;
+  let listening = false;
 
   function start() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+
+    recognition.onspeechend = async function (event) {
+      listening = false;
+    };
 
     recognition.onresult = async function (event) {
       const transcript = event.results[0][0].transcript;
@@ -53,11 +58,11 @@ export default function Home() {
 
       source.onended = async function (event) {
         analyser = null;
-        start();
       };
     };
 
     recognition.start();
+    listening = true;
   }
 
   const average = (array: Uint8Array) => {
@@ -95,6 +100,7 @@ export default function Home() {
       },
       u_frequency: { type: "f", value: 0.0 },
       u_time: { type: "f", value: 0.0 },
+      u_listening: { type: "bool", value: false },
     };
 
     const geometry = new THREE.IcosahedronGeometry(4, 20);
@@ -207,13 +213,18 @@ export default function Home() {
       `,
       fragmentShader: `
         uniform vec2 u_resolution;
+        uniform bool u_listening;
 
         void main() {
           vec2 st = gl_FragCoord.xy / u_resolution;
 
-          gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
+          if (u_listening) {
+            gl_FragColor = vec4(vec3(st.x, 1.0, st.y), 1.0);  
+          }
+          else {
+            gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
+          }
         }
-      
       `,
     });
     var ball = new THREE.Mesh(geometry, material);
@@ -225,6 +236,7 @@ export default function Home() {
     const clock = new THREE.Clock();
 
     var animate = function () {
+      uniforms.u_listening.value = listening;
       uniforms.u_time.value = clock.getElapsedTime();
       if (analyser) {
         const bufferLength = analyser.frequencyBinCount;
