@@ -4,12 +4,24 @@ import * as THREE from "three";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  let analyser = null;
+  let analyser: null | AnalyserNode = null;
+  let listening = false;
+  let source: null | AudioBufferSourceNode = null;
 
-  function start() {
+  function handleClick() {
+    if (source) {
+      source.stop();
+      source = null;
+      return;
+    }
+
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+
+    recognition.onspeechend = async function (event) {
+      listening = false;
+    };
 
     recognition.onresult = async function (event) {
       const transcript = event.results[0][0].transcript;
@@ -36,7 +48,6 @@ export default function Home() {
 
       const audioContext = new AudioContext();
       analyser = audioContext.createAnalyser();
-      console.log("analyser - start()", analyser);
       analyser.fftSize = 2048;
 
       const bytesList = googleCloudResponse.audio.data;
@@ -46,18 +57,20 @@ export default function Home() {
         bytesArrayBuffer
       );
 
-      const source = audioContext.createBufferSource();
+      source = audioContext.createBufferSource();
       source.buffer = decodedBuffer;
       source.connect(analyser);
       analyser.connect(audioContext.destination);
-      source.start(0);
+      source.start();
 
       source.onended = async function (event) {
         analyser = null;
+        source = null;
       };
     };
 
     recognition.start();
+    listening = true;
   }
 
   const average = (array: Uint8Array) => {
@@ -70,7 +83,7 @@ export default function Home() {
 
   // based off of this code:
   // https://dev.to/omher/how-to-start-using-react-and-threejs-in-a-few-minutes-2h6g
-  const refContainer = useRef() as { current: HTMLElement };
+  const refContainer = useRef(null) as { current: null | HTMLDivElement };
   useEffect(() => {
     // === THREE.JS CODE START ===
     const scene = new THREE.Scene();
@@ -97,6 +110,7 @@ export default function Home() {
       },
       u_frequency: { type: "f", value: 0.0 },
       u_time: { type: "f", value: 0.0 },
+      u_listening: { type: "bool", value: false },
     };
 
     const geometry = new THREE.IcosahedronGeometry(4, 20);
@@ -209,13 +223,18 @@ export default function Home() {
       `,
       fragmentShader: `
         uniform vec2 u_resolution;
+        uniform bool u_listening;
 
         void main() {
           vec2 st = gl_FragCoord.xy / u_resolution;
 
-          gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
+          if (u_listening) {
+            gl_FragColor = vec4(vec3(st.x, 1.0, st.y), 1.0);  
+          }
+          else {
+            gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
+          }
         }
-      
       `,
     });
     var ball = new THREE.Mesh(geometry, material);
@@ -227,6 +246,7 @@ export default function Home() {
     const clock = new THREE.Clock();
 
     var animate = function () {
+      uniforms.u_listening.value = listening;
       uniforms.u_time.value = clock.getElapsedTime();
       if (analyser) {
         const bufferLength = analyser.frequencyBinCount;
@@ -236,7 +256,6 @@ export default function Home() {
       } else {
         uniforms.u_frequency.value = 0.0;
       }
-      console.log("analyzer - three.js", analyser);
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -245,8 +264,7 @@ export default function Home() {
 
   return (
     <div>
-      <button onClick={start}>Start</button>
-      <div ref={refContainer}></div>
+      <div ref={refContainer} onClick={handleClick}></div>
     </div>
   );
 }
