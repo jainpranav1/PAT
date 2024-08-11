@@ -37,8 +37,6 @@ export async function POST(request: Request) {
     The current score is ${stateJson.score}.
     Initially, introduce yourself to the user and details about the game.
     Mention in your introduction that you are similar to Jarvis.
-    Don't mention the number of questions answered so far or the current score
-    in the introduction.
     Your responses should have the following JSON schema:
     
     { 
