@@ -21,8 +21,10 @@ PAT is a Next.js project. PAT's floating orb was created using Three.js. PAT lis
 - On a phone, visit `https://<ip address>:3000`
 - You should see a spherical orb - this is PAT
 - Build a [Pepper's ghost viewer](https://www.youtube.com/watch?v=IIaZr31pptY)
-- Place the hpone in the viewer
-- Tap PAT and talk with him!
+- Place the phone in the viewer
+- Tap PAT
+- When he stops undulating, talk with him!
+- Wait for a reply from PAT
 - The conversation is saved in `public/conversation.json`
 
 # Resources Used
