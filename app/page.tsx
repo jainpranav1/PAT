@@ -213,9 +213,16 @@ export default function Home() {
         }
 
         uniform float u_frequency;
+        uniform bool u_listening;
 
         void main() {
-          float noise = 5.0 * pnoise(position + u_time, vec3(10.0));
+          float noise;
+          if (u_listening) {
+            noise = 5.0 * pnoise(position, vec3(10.0));
+          }
+          else {
+            noise = 5.0 * pnoise(position + u_time, vec3(10.0));
+          }
           float displacement = (u_frequency * 1.) + (noise / 10.0);
           vec3 newPosition = position + normal * displacement;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
@@ -223,17 +230,10 @@ export default function Home() {
       `,
       fragmentShader: `
         uniform vec2 u_resolution;
-        uniform bool u_listening;
 
         void main() {
           vec2 st = gl_FragCoord.xy / u_resolution;
-
-          if (u_listening) {
-            gl_FragColor = vec4(vec3(st.x, 1.0, st.y), 1.0);  
-          }
-          else {
-            gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
-          }
+          gl_FragColor = vec4(vec3(st.x, st.y, 1.0), 1.0);
         }
       `,
     });
