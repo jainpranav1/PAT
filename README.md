@@ -36,6 +36,10 @@ I could not have built this project without extensive guidance from the followin
 - Tutorial for Three.js audio visualizer - [How To Create A 3D Audio Visualizer Using Three.js
   ](https://www.youtube.com/watch?v=qDIF2z_VtHs)
 
+# Usage
+
+Feel free to fork this code and modify it.
+
 # Special Thanks
 
 - Thank you to my Mom for helping me film the video. Thank you to my Mom and Dad for supporting me while making this project.
