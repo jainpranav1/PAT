@@ -12,43 +12,28 @@ PAT is a Next.js project. PAT's floating orb was created using Three.js. PAT lis
 
 # How To Run
 
+- Set up [Application Default Credentials](https://cloud.google.com/text-to-speech/docs/libraries#authentication) to use Google Cloud Text to Speech
+- Get a [Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key)
 - Clone this repo (`git clone https://github.com/jainpranav1/PAT.git`)
--
-- Download [Node.js](https://nodejs.org/en)
+- Run `npm install` to install Node.js dependencies
+- Run `npm start dev` in a terminal with administrator privileges to run the Next.js application
+- Get your computer's ip address (the ip address has the following form: 192.168.x.x) using `ifconfig` (on mac) or `ipconfig` (on windows)
+- On a phone, visit `https://<ip address>:3000`
+- You should see a spherical orb - this is PAT
+- Build a [Pepper's ghost viewer](https://www.youtube.com/watch?v=IIaZr31pptY)
+- Place the hpone in the viewer
+- Tap PAT and talk with him!
+- The conversation is saved in `public/conversation.json`
 
-First, run the development server:
+# Resources Used
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+I could not have built this project without extensive guidance from the following resources. Thank you to all the developers that made the resources.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Tutorial for using Web Speech API - [Speech Recognition & Voice Synthesis in React (Web Speech API)
+  ](https://www.youtube.com/watch?v=JFfCDvKiJqU)
+- Tutorial for Three.js audio visualizer - [How To Create A 3D Audio Visualizer Using Three.js
+  ](https://www.youtube.com/watch?v=qDIF2z_VtHs)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Special Thanks
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-## Resources
-
-- [Speech Recognition Tutorial](https://www.youtube.com/watch?v=JFfCDvKiJqU)
+- Thank you to my Mom for helping me film the video. Thank you to my Mom and Dad for supporting me while making this project.
