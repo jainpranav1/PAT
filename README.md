@@ -1,6 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PAT
 
-## Getting Started
+PAT (Pranav's AI Talkbot) is a JARVIS-like AI assistant. He appears as an undulating, floating orb using the Pepper's ghost illusion. Once he is tapped on, he stops undulating, indicating he is listening for a prompt from the user. After listening to the prompt, PAT delivers an audible reply. The orb expands with the frequency of the reply's audio. If the prompt was a command to open a certain website (ex. open google), PAT will open the website on the user's computer. PAT can be interrupted by tapping on him. PAT also stores the conversations in a local JSON file, allowing him to remember conversations across days. The app is colorblind friendly and free to use.
+
+# Demo
+
+[![PAT Video](https://img.youtube.com/vi/_JdgnBJxhuc/0.jpg)](https://www.youtube.com/watch?v=_JdgnBJxhuc)
+
+# How Does It Work?
+
+PAT is a Next.js project. PAT's floating orb was created using Three.js. PAT listens for a prompt from the user using the [SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) interface of the Web Speech API. PAT processes prompts using the [Gemini API](https://ai.google.dev/gemini-api). PAT then delivers audible replies using [Google Cloud Text to Speech](https://cloud.google.com/text-to-speech?hl=en).
+
+# How To Run
+
+- Clone this repo (`git clone https://github.com/jainpranav1/PAT.git`)
+-
+- Download [Node.js](https://nodejs.org/en)
 
 First, run the development server:
 

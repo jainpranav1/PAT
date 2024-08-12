@@ -6,9 +6,7 @@ import * as protos from "@google-cloud/text-to-speech/build/protos/protos";
 
 dotenv.config();
 
-const client = new textToSpeech.TextToSpeechClient({
-  projectId: "jarvisproject-431518",
-});
+const client = new textToSpeech.TextToSpeechClient();
 
 export async function POST(request: Request) {
   const { AIText } = await request.json();
