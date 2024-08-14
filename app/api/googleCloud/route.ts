@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import dotenv from "dotenv";
 import textToSpeech from "@google-cloud/text-to-speech";
-import fs from "node:fs/promises";
 import * as protos from "@google-cloud/text-to-speech/build/protos/protos";
+import removeMd from "remove-markdown";
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   // Construct the request
   const data: protos.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
-    input: { text: AIText },
+    input: { text: removeMd(AIText) },
     // Select the language and SSML voice gender (optional)
     voice: { languageCode: "en-GB", ssmlGender: "MALE" },
     // select the type of audio encoding
