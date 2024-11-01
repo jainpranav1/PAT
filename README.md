@@ -18,7 +18,7 @@ PAT is a Next.js project. PAT's floating orb was created using Three.js. PAT lis
 - Create a `.env` file
 - Add `GEMINI_API_KEY = <your gemini api key>` to the `.env` file
 - Run `npm install` to install Node.js dependencies
-- Run `npm start dev` in a terminal with administrator privileges to run the Next.js application
+- Run `npm run dev` in a terminal with administrator privileges to run the Next.js application
 - Get your computer's ip address (the ip address has the following form: 192.168.x.x) using `ifconfig` (on mac) or `ipconfig` (on windows)
 - On a phone, visit `https://<your ip address>:3000`
 - You should see a spherical orb - this is PAT

@@ -82,6 +82,7 @@ export async function POST(request: Request) {
   if (initialResponseFuncCalls) {
     if (initialResponseFuncCalls.length > 0) {
       const call = initialResponseFuncCalls[0];
+      // @ts-ignore
       const callResult = await functions[call.name](call.args);
       const secondResult = await chat.sendMessage([
         {
